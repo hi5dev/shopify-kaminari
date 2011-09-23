@@ -2,6 +2,16 @@
 
 Extends ShopifyAPI with support for paginating the resources via the Kaminari gem.
 
+== Install
+
+To install, just add the gem to your Gemfile:
+
+    gem 'shopify-kaminari'
+
+And run bundle:
+
+    $ bundle
+
 == Examples
 
 View code:
