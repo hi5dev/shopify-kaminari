@@ -19,5 +19,4 @@ Gem::Specification.new do |s|
   
   s.add_dependency("shopify_api", [">= 1.2.5"])
   s.add_dependency("kaminari", [">= 0.12.4"])
-  s.add_dependency("rspec", [">= 2.6.0"])
 end
