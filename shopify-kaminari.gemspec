@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "shopify-kaminari"
-  s.version     = "0.0.1"
+  s.version     = "0.0.2"
   s.authors     = ["Travis Haynes"]
   s.email       = ["travis.j.haynes@gmail.com"]
   s.homepage    = ""
