@@ -41,8 +41,8 @@ module ShopifyAPI
       
       # create params for pagination
       params = {
-        :page => options[:page] || 1,
-        :per  => options[:per]  || 25
+        :page   => options[:page] || 1,
+        :limit  => options[:per]  || 25
       }
       
       # remove pagination params from options
@@ -64,8 +64,8 @@ module ShopifyAPI
       # add instance methods to result Array to support paginating with Kaminari
       result.instance_eval <<-EVAL
         def current_page; #{args[:params][:page]}; end
-        def num_pages; #{self.count / args[:params][:per] + 1}; end
-        def limit_value; #{args[:params][:per]}; end
+        def num_pages; #{self.count / args[:params][:limit] + 1}; end
+        def limit_value; #{args[:params][:limit]}; end
       EVAL
       
       result
