@@ -18,13 +18,14 @@ describe ShopifyAPI::Kaminari do
       results = ShopifyAPI::Test.paginate
       results.should respond_to :current_page
     end
-    it "should respond to num_pages" do
+    it "should respond to total_pages" do
       results = ShopifyAPI::Test.paginate
-      results.should respond_to :num_pages
+      results.should respond_to :total_pages
     end
     it "should respond to limit_value" do
       results = ShopifyAPI::Test.paginate
       results.should respond_to :limit_value
     end
   end
+  
 end
