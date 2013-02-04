@@ -64,7 +64,7 @@ module ShopifyAPI
       # add instance methods to result Array to support paginating with Kaminari
       result.instance_eval <<-EVAL
         def current_page; #{args[:params][:page]}; end
-        def total_pages; #{self.count / args[:params][:limit] + 1}; end
+        def total_pages; #{(self.count.to_f / args[:params][:limit].to_f).ceil}; end
         def limit_value; #{args[:params][:limit]}; end
       EVAL
       
