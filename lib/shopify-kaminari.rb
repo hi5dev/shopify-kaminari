@@ -53,7 +53,7 @@ module ShopifyAPI
       params = params.merge options[:params] if options.include? :params
       
       # remove params from options
-      options.delete :params
+      filters = options.delete :params
       
       # create arguments to pass to ActiveResource find
       args = {:params => params}.merge options
@@ -64,7 +64,7 @@ module ShopifyAPI
       # add instance methods to result Array to support paginating with Kaminari
       result.instance_eval <<-EVAL
         def current_page; #{args[:params][:page]}; end
-        def total_pages; #{(self.count.to_f / args[:params][:limit].to_f).ceil}; end
+        def total_pages; #{(self.count(filters).to_f / args[:params][:limit].to_f).ceil}; end
         def limit_value; #{args[:params][:limit]}; end
       EVAL
       
