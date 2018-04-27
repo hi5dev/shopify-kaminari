@@ -1,5 +1,8 @@
 # Shopify::Kaminari
 
+[![Build Status](https://travis-ci.org/hi5dev/shopify-kaminari.svg?branch=master)](https://travis-ci.org/hi5dev/shopify-kaminari)
+[![Coverage Status](https://coveralls.io/repos/github/hi5dev/shopify-kaminari/badge.svg?branch=master)](https://coveralls.io/github/hi5dev/shopify-kaminari?branch=master)
+
 Makes the [shopify_api gem](https://github.com/shopify/shopify_api) compatible
 with the [kaminari](https://github.com/kaminari/kaminari) pagination gem.
 
