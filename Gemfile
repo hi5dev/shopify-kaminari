@@ -1,8 +1,8 @@
-source "http://rubygems.org"
+# coding: utf-8
+# frozen_string_literal: true
 
-# Specify your gem's dependencies in shopify-kaminari.gemspec
+source 'https://rubygems.org'
+
+git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
+
 gemspec
-
-group :test do
-  gem 'rspec'
-end

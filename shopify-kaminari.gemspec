@@ -1,22 +1,38 @@
-# -*- encoding: utf-8 -*-
-$:.push File.expand_path("../lib", __FILE__)
+# coding: utf-8
+# frozen_string_literal: true
 
-Gem::Specification.new do |s|
-  s.name        = "shopify-kaminari"
-  s.version     = "0.1.0"
-  s.authors     = ["Travis Haynes"]
-  s.email       = ["travis.j.haynes@gmail.com"]
-  s.homepage    = ""
-  s.summary     = %q{Provides shopify_api with pagination support via Kaminari}
-  s.description = %q{Extends ShopifyAPI, adding support to paginate using the Kaminari gem.}
+lib = File.expand_path('lib', __dir__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-  s.rubyforge_project = "shopify-kaminari"
+require 'shopify/kaminari/version'
 
-  s.files         = `git ls-files`.split("\n")
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
-  s.require_paths = ["lib"]
-  
-  s.add_dependency("shopify_api", [">= 1.2.5"])
-  s.add_dependency("kaminari", [">= 0.12.4"])
+Gem::Specification.new do |spec|
+  spec.name = 'shopify-kaminari'
+  spec.version = Shopify::Kaminari::VERSION
+  spec.authors = ['Travis Haynes']
+  spec.email = ['travis@hi5dev.com']
+  spec.homepage = 'https://github.com/hi5dev/shopify-kaminari.git'
+  spec.summary = %q{Provides shopify_api with pagination support via Kaminari}
+
+  spec.bindir = 'exe'
+  spec.require_paths = ['lib']
+
+  spec.files = `git ls-files -z`.split("\x0").reject do |file|
+    file.match(%r{^(test)/})
+  end
+
+  spec.executables = spec.files.grep(%r{^#{spec.bindir}/}) do |file|
+    File.basename(file)
+  end
+
+  spec.add_dependency 'shopify_api'
+  spec.add_dependency 'kaminari'
+
+  spec.add_development_dependency 'bundler', '~> 1.16'
+  spec.add_development_dependency 'coveralls'
+  spec.add_development_dependency 'minitest', '~> 5.0'
+  spec.add_development_dependency 'minitest-reporters', '~> 1.2'
+  spec.add_development_dependency 'rake', '~> 10.0'
+  spec.add_development_dependency 'simplecov', '~> 0.16'
+  spec.add_development_dependency 'yard', '~> 0.9'
 end

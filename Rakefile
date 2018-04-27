@@ -1,10 +1,12 @@
+# coding: utf-8
+# frozen_string_literal: true
+
 require 'bundler/gem_tasks'
+require 'rake/testtask'
 
-task :default => [:spec]
-
-desc "runs all specs"
-task :spec do
-  files = Dir[File.expand_path("../spec/**/*_spec.rb", __FILE__)].join(" ")
-  puts files
-  exec "bundle exec rspec #{files}"
+Rake::TestTask.new do |t|
+  t.libs += %w[lib test]
+  t.test_files = FileList['test/**/*_test.rb']
 end
+
+task default: :test
