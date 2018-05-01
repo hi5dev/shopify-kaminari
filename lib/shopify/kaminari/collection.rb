@@ -9,16 +9,49 @@
 # @example Paginating products.
 #   products = Shopify::Product.all(params: { page: 2, limit: 25 })
 class Shopify::Kaminari::Collection < ActiveResource::Collection
+  include ::Kaminari::ConfigurationMethods
+
   alias_method :model, :resource_class
 
   # Shopify returns this many records by default if no limit is given.
   DEFAULT_LIMIT_VALUE = 50
 
+  ENTRIES_INFO_I18N_KEY = 'helpers.page_entries_info.entry'.freeze
+
+  self.paginates_per(DEFAULT_LIMIT_VALUE)
+
   # The page that was requested from the API.
   #
   # @return [Integer] The current page.
   def current_page
-    @current_page ||= original_params.fetch(:page, 1).to_i
+    original_params.fetch(:page, 1).to_i
+  end
+
+  # @return [Integer] Current per-page number.
+  def current_per_page
+    limit_value
+  end
+
+  # Used for page_entries_info ActionView helper.
+  #
+  # @param [Hash] options Options provided by Kaminari.
+  # @return [String] Numbers of displayed vs. total entries.
+  def entry_name(options = {})
+    options = options.reverse_merge(
+      default: model_name.singular.pluralize(options[:count])
+    )
+
+    I18n.t(ENTRIES_INFO_I18N_KEY, options)
+  end
+
+  # @return [true, false] If on the first page.
+  def first_page?
+    current_page == 1
+  end
+
+  # @return [true, false] If on the last page.
+  def last_page?
+    current_page == total_pages
   end
 
   # The maximum amount of records each page will have.
@@ -46,14 +79,46 @@ class Shopify::Kaminari::Collection < ActiveResource::Collection
   #
   # @return [Integer, NilClass] The next page number, or nil if on the last.
   def next_page
-    @next_page ||= current_page + 1 if current_page < total_pages
+    current_page + 1 unless last_page? || out_of_range?
+  end
+
+  # Checks if the specified page is out of the range of the collection.
+  #
+  # @return [true, false] If out of range.
+  def out_of_range?
+    current_page > total_pages
+  end
+
+  # Fetches a new collection from the Shopify server using the same
+  # parameters, except with a new value for limit.
+  #
+  # @param [Integer] limit New limit to apply to the collection.
+  # @return [Shopify::Kaminari::Collection] Updated collection.
+  def per(limit)
+    params = original_params.with_indifferent_access.merge(limit: limit)
+
+    resource_class.all(params: params)
   end
 
   # Gets the number of the previous page.
   #
   # @return [Integer, NilClass] The previous page number or nil if on the first.
   def prev_page
-    @prev_page ||= current_page - 1 if current_page > 1
+    current_page - 1 unless first_page? || out_of_range?
+  end
+
+  # Gets the total number of entries available on the server for the original
+  # parameters used to fetch the collection.
+  #
+  # @return [Integer] Total number of entries.
+  def total_count
+    @total_count ||= begin
+      # Get the parameters without the pagination parameters.
+      options = original_params.with_indifferent_access.except(:page, :limit)
+
+      # Ask Shopify how many records there are for the given query.
+      count = resource_class.count(options)
+    end
   end
 
   # Calculates the total number of expected pages based on the number
@@ -61,17 +126,6 @@ class Shopify::Kaminari::Collection < ActiveResource::Collection
   #
   # @return [Integer] Total number of pages.
   def total_pages
-    @total_pages ||= begin
-      # Get the parameters without the pagination parameters.
-      params = original_params.with_indifferent_access.except(:page, :limit)
-
-      options = params.empty? ? {} : params
-
-      # Ask Shopify how many records there are for the given query.
-      count = resource_class.count(options)
-
-      # Calculate the number of pages.
-      (count.to_f / limit_value.to_f).ceil
-    end
+    @total_pages ||= (total_count.to_f / limit_value.to_f).ceil
   end
 end

@@ -46,8 +46,10 @@ class Shopify::Kaminari::CollectionTest < Minitest::Test
   end
 
   def test_prev_page
-    assert_nil fetch_products(page: 1).prev_page
-    assert_equal 2, fetch_products(page: 3).prev_page
+    shopify_session do
+      assert_nil fetch_products(page: 1).prev_page
+      assert_equal 2, fetch_products(page: 3).prev_page
+    end
   end
 
   def test_total_pages
@@ -66,6 +68,56 @@ class Shopify::Kaminari::CollectionTest < Minitest::Test
     shopify_session do
       shopify_api_mock :get, count_path, count_json
       assert_equal 10, fetch_products(query).total_pages
+    end
+  end
+
+  def test_current_per_page
+    assert_equal 50, fetch_products.current_per_page
+  end
+
+  def test_entry_name
+    assert_equal 'products', fetch_products.entry_name
+  end
+
+  def test_first_page?
+    assert fetch_products.first_page?
+    refute fetch_products(page: 2).first_page?
+  end
+
+  def test_last_page?
+    shopify_session do
+      refute fetch_products.last_page?
+      assert fetch_products(page: 3).last_page?
+    end
+  end
+
+  def test_per
+    products = Array.new(100).map { |i| { id: i } }
+
+    shopify_session do
+      shopify_api_mock :get, 'products.json?limit=100', products.to_json
+      act = fetch_products.per(100)
+      assert_equal 100, act.count
+    end
+  end
+
+  def test_total_count
+    shopify_session do
+      assert_equal 127, fetch_products(page: 1, limit: 25).total_count
+    end
+  end
+
+  def test_page
+    products = fake_products[0..49]
+    products_json = { products: products }.to_json
+
+    shopify_session do
+      shopify_api_mock :get, 'products.json?page=1', products_json
+      entries = ShopifyAPI::Product.page(1)
+      products.each do |product|
+        entry = entries.find { |entry| entry.id == product[:id] }
+        assert_kind_of ShopifyAPI::Product, entry
+      end
     end
   end
 
