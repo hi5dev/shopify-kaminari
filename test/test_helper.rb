@@ -6,7 +6,7 @@ $VERBOSE = nil
 
 # Start code coverage.
 require 'coveralls'
-Coveralls.wear!
+Coveralls.wear! if Coveralls.will_run?
 
 # Load the gem's library.
 $LOAD_PATH << File.expand_path('../lib', __dir__)
